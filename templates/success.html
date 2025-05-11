@@ -12,13 +12,36 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/admindashboard.css') }}">
 	</head>
 	<body>
 		<header>
 			<section id="particles-js">
-				<h2><span style="color:#08088A"><strong>IHA089</strong></span><span style="color:#01DFD7"><strong>-</strong></span><span style="color:#08088A"><strong>LABS</strong></span></h2>
-				<h3><span style="color:red"><strong>Welcome, {{user}}</strong></span></h3>
+			<script>
+				window.addEventListener('load', function () {
+					const duration = 3 * 1000; 
+					const end = Date.now() + duration;
+		
+					(function frame() {
+						confetti({
+							particleCount: 5,
+							angle: 60,
+							spread: 55,
+							origin: { x: 0 },
+						});
+						confetti({
+							particleCount: 5,
+							angle: 120,
+							spread: 55,
+							origin: { x: 1 },
+						});
+		
+						if (Date.now() < end) {
+							requestAnimationFrame(frame);
+						}
+					})();
+				});
+			</script>
 			</section>
 			
 			<nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
@@ -38,10 +61,16 @@
 					<div class="collapse navbar-collapse" id="navbar-menu">
 						<ul class="nav navbar-nav navbar-right">
 							<li><a href="index.html">Home</a></li>
-							<li><a href="dashboard.html">Dashboard</a></li>
-							<li><a href="profile.html">Profile</a></li>
-							<li><a href="logout.html">Logout</a></li>
-							<li><a href="check.html">Submit Flag</a><li>
+							{% if user %}
+                            					<li><a href="dashboard.html">Dashboard</a></li>
+								<li><a href="profile.html">Profile</a></li>
+                            					<li><a href="logout.html">Logout</a></li>
+								<li><a href="check.html">Submit Flag</a></li>
+                        				{% else %}
+								<li><a href="login.html">Login</a></li>
+								<li><a href="check.html">Submit Flag</a></li>
+								<li><a href="join.html">Join Now</a></li>
+							{% endif %}
 							<li><a href="https://iha089.org">Official Website</a></li>
 							<li>
 								<div class="buy-coffee-container">
@@ -55,20 +84,13 @@
 				</div>
 			</nav>
 		</header>
-		<script>
-			document.addEventListener("DOMContentLoaded", function () {
-				const urlParams = new URLSearchParams(window.location.search);
-				const nextUrl = urlParams.get("next");
-				const allowedDomain = "https://iha089-labs.in";
-
-				if (nextUrl && nextUrl.startsWith(allowedDomain)) {
-					window.location.href = nextUrl;
-				}
-				else{
-					console.error("Invalid redirection URL detect. Redirect aborted.");
-				}
-			});
-		</script>
+		<div class="body-contant">
+			<h4><span style="color:white"><strong>Congratulations on Successfully Solving the Open Redirection Lab!</strong></span></h4>
+			<h2>Great job, security sleuth!</h2>
+			<p>You've successfully completed the <b>Open Redirection via DOM-Based Open Redirection Lab!</b> This accomplishment demonstrates your skill in identifying vulnerabilities within client-side scripts, where attackers can exploit DOM manipulation to execute malicious redirects. Your persistence and attention to detail are essential for addressing such nuanced security flaws. By solving this lab, you’ve furthered your expertise in web application security and enhanced your ability to protect against client-side attacks. Keep up the great work—each challenge you conquer sharpens your skills even more. Stay curious, stay secure, and keep learning!</p>
+			<p><strong>Congratulations once again!</strong></p>
+			<p>--The IHA089 Team</p>
+		</div>
 		<footer class="footer">
 			<div class="footer-left">
 			<h5>About</h5>
