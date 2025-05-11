@@ -3,7 +3,7 @@ from flask import Flask, request, make_response, render_template, session, jsoni
 from functools import wraps
 import jwt as pyjwt
 from collections import defaultdict
-import uuid, datetime, sqlite3, hashlib, random, os, secrets, requests, string, time
+import uuid, datetime, sqlite3, hashlib, random, os, secrets, requests, string, time, urllib3
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -15,6 +15,8 @@ user_data = {}
 
 DOMBasedOpenRedirection = Flask(__name__)
 DOMBasedOpenRedirection.secret_key = "vulnerable_lab_by_IHA089"
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JWT_SECRET = "MoneyIsPower"
 
@@ -135,6 +137,10 @@ def acceptable_html():
         session.clear()
     return render_template('acceptable.html', user=session.get('user'))
 
+@DOMBasedOpenRedirection.route('/check.html')
+def check_html():
+    return render_template('check.html', user=session.get('user'))
+
 @DOMBasedOpenRedirection.route('/term.html')
 def term_html():
     if not check_cookies():
@@ -218,7 +224,7 @@ def resend():
                     "bodycontent":bdcontent
                 }
         try:
-            k = requests.post(mail_server, json = payload)
+            k = requests.post(mail_server, json = payload, verify=False)
         except:
             return jsonify({"error": "Mail server is not responding"}), 500
         error_message="code sent"
@@ -279,6 +285,19 @@ def login():
 
     error_message = "Invalid username or password. Please try again."
     return render_template('login.html', error=error_message)
+
+@DOMBasedOpenRedirection.route('/check', methods=['POST'])
+def check():
+    session_code = request.form.get('redirectionurl')
+    
+    if "https://iha089-labs.in/dashboard.html?next=https://iha089-labs.in@" in session_code or "https://iha089-labs.in/dashboard.html?next=https://iha089-labs.in@" in session_code or "https://iha089-labs.in/profile.html?next=https://iha089-labs.in@" in session_code or "https://iha089-labs.in/profile?next=https://iha089-labs.in@" in session_code: 
+        attc_dom = session_code.split("@")[1]
+        if "iha089-labs.in" not in attc_dom:
+            return render_template('success.html', user=session.get('user'))
+        else:
+            return render_template('check.html', error="Invalid redirection url")
+    else:
+        return render_template('check.html', error="Invalid redirection url")
 
 @DOMBasedOpenRedirection.route('/resetpassword', methods=['POST'])
 def resetpassword():
@@ -346,12 +365,12 @@ def join():
         bdcontent = "<h2>Verify Your Account password</h2><p>your verification code are given below</p><div style=\"background-color: orange; color: black; font-size: 14px; padding: 10px; border-radius: 5px; font-family: Arial, sans-serif;\">"+code+"</div><p>If you did not request this, please ignore this email.</p>"
         mail_server = "https://127.0.0.1:7089/dcb8df93f8885473ad69681e82c423163edca1b13cf2f4c39c1956b4d32b4275"
         payload = {"email": username,
-                    "sender":"IHA089 Labs ::: DOMBasedOpenRedirectionLab",
-                    "subject":"DOMBasedOpenRedirectionLab::Verify Your Accout",
+                    "sender":"IHA089 Labs ::: DOMBasedOpenRedirection",
+                    "subject":"DOMBasedOpenRedirection::Verify Your Accout",
                     "bodycontent":bdcontent
                 }
         try:
-            k = requests.post(mail_server, json = payload)
+            k = requests.post(mail_server, json = payload, verify=False)
         except:
             return jsonify({"error": "Mail server is not responding"}), 500
 
@@ -414,15 +433,15 @@ def forgot():
                 conn.close()
                 username = uname.replace(" ","")
                 cmplt_url = "https://iha089-labs.in/reset?token="+token
-                bdcontent = "<h2>Reset Your Account password</h2><p>Click the button below to reset your account password on DOM Based Open Redirection Lab</p><a href=\""+cmplt_url+"\">Verify Your Account</a><p>If you did not request this, please ignore this email.</p>"
+                bdcontent = "<h2>Reset Your Account password</h2><p>Click the button below to reset your account password on Improper Access Control Lab</p><a href=\""+cmplt_url+"\">Verify Your Account</a><p>If you did not request this, please ignore this email.</p>"
                 mail_server = "https://127.0.0.1:7089/dcb8df93f8885473ad69681e82c423163edca1b13cf2f4c39c1956b4d32b4275"
                 payload = {"email": username,
-                            "sender":"IHA089 Labs ::: DOMBasedOpenRedirectionLab",
-                            "subject":"DOMBasedOpenRedirectionLab::Click bellow link to reset your password",
+                            "sender":"IHA089 Labs ::: DOMBasedOpenRedirection",
+                            "subject":"DOMBasedOpenRedirection::Click bellow link to reset your password",
                             "bodycontent":bdcontent
                     }
                 try:
-                    k = requests.post(mail_server, json = payload)
+                    k = requests.post(mail_server, json = payload, verify=False)
                 except:
                     return jsonify({"error": "Mail server is not responding"}), 500  
             else:
